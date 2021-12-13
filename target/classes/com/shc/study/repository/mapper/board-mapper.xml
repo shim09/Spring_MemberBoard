@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ 
+  <mapper namespace="Board">
+  
+ 	<insert id="insert" parameterType="bdto">
+ 		insert into board(b_writer, b_password, b_title, b_contents, b_date)
+ 			values(#{b_writer},#{b_password},#{b_title},#{b_contents}, now())
+ 	</insert>
+ 	
+ 	<select id="findAll" resultType="bdto">
+ 		select * from board
+ 	</select>
+ 	
+ 	 	<!-- 상세조회 -->
+ 	<select id="detail" parameterType="long" resultType="bdto">
+ 		select * from board where b_number=#{b_number}
+ 	</select>
+ 	
+ 		<update id="update" parameterType="bdto">
+ 		update board set b_title=#{b_title}, b_contents=#{b_contents}, b_date=now() where b_number=#{b_number}
+	</update>
+ 	
+ 		<!-- 조회수 증가 -->
+	<update id="hits" parameterType="long">
+ 		update board set b_hits=(b_hits+1) where b_number=#{b_number}
+	</update>
+	
+		<delete id="delete" parameterType="long">
+		delete from board where b_number=#{b_number}
+	</delete>
+	
+		<select id="pagingList" parameterType="int" resultType="bdto">
+		select * from board order by b_number desc limit #{pagingStart}, 3
+	</select>
+	
+	<select id="pagingList1" parameterType="java.util.HashMap" resultType="bdto">
+		select * from board order by b_number desc limit #{start}, #{limit}
+	</select>
+	
+	<select id="count" resultType="int">
+		select count(b_number) from board
+	</select>
+	
+		<select id="search" parameterType="java.util.HashMap" resultType="bdto">
+		select * from board			
+		<include refid="sear"></include>
+	</select>
+	
+		<sql id="sear">
+		<choose>
+			<when test="type=='b_title'">
+				where b_title like concat('%', #{word}, '%') 
+			</when>
+			<when test="type=='b_writer'">
+				where b_writer like concat('%', #{word}, '%') 
+			</when>
+		</choose>
+	</sql>
+ 	
+ 	</mapper>
